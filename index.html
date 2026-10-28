@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Convert any video into high-quality HD frame images. Extract frames as PNG or JPG, choose FPS, and download as a ZIP.">
+    <title>FrameForge — HD Video Frame Extractor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Animated background particles -->
+    <div class="bg-particles" id="bgParticles"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-icon">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <rect x="2" y="6" width="28" height="20" rx="3" stroke="url(#logoGrad)" stroke-width="2.5"/>
+                        <line x1="11" y1="6" x2="11" y2="26" stroke="url(#logoGrad)" stroke-width="1.5"/>
+                        <line x1="21" y1="6" x2="21" y2="26" stroke="url(#logoGrad)" stroke-width="1.5"/>
+                        <line x1="2" y1="14" x2="30" y2="14" stroke="url(#logoGrad)" stroke-width="1.5"/>
+                        <line x1="2" y1="20" x2="30" y2="20" stroke="url(#logoGrad)" stroke-width="1.5"/>
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0" y1="0" x2="32" y2="32">
+                                <stop offset="0%" stop-color="#a78bfa"/>
+                                <stop offset="100%" stop-color="#06b6d4"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <span class="logo-text">FrameForge</span>
+            </div>
+            <p class="header-tagline">Extract HD frames from any video</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- Step 1: Upload -->
+        <section class="card upload-section" id="uploadSection">
+            <div class="card-header">
+                <span class="step-badge">1</span>
+                <h1>Upload Your Video</h1>
+            </div>
+            <div class="dropzone" id="dropzone">
+                <div class="dropzone-content">
+                    <div class="dropzone-icon">
+                        <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                            <path d="M32 44V20M32 20L22 30M32 20L42 30" stroke="url(#upGrad)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 40V48C12 50.2091 13.7909 52 16 52H48C50.2091 52 52 50.2091 52 48V40" stroke="url(#upGrad)" stroke-width="3" stroke-linecap="round"/>
+                            <defs>
+                                <linearGradient id="upGrad" x1="12" y1="20" x2="52" y2="52">
+                                    <stop offset="0%" stop-color="#a78bfa"/>
+                                    <stop offset="100%" stop-color="#06b6d4"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                    <p class="dropzone-title">Drag & drop your video here</p>
+                    <p class="dropzone-subtitle">or click to browse files</p>
+                    <p class="dropzone-formats">Supports MP4, WebM, MOV, AVI, MKV</p>
+                </div>
+                <input type="file" id="fileInput" accept="video/*" hidden>
+            </div>
+
+            <!-- Video Preview -->
+            <div class="video-preview hidden" id="videoPreview">
+                <div class="video-wrapper">
+                    <video id="videoPlayer" controls></video>
+                </div>
+                <div class="video-info" id="videoInfo"></div>
+                <button class="btn btn-ghost" id="removeVideoBtn">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path d="M4 4L14 14M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Remove Video
+                </button>
+            </div>
+        </section>
+
+        <!-- Step 2: Settings -->
+        <section class="card settings-section hidden" id="settingsSection">
+            <div class="card-header">
+                <span class="step-badge">2</span>
+                <h2>Configure Extraction</h2>
+            </div>
+
+            <div class="settings-grid">
+                <!-- Format Selection -->
+                <div class="setting-group">
+                    <label class="setting-label">Output Format</label>
+                    <div class="format-selector">
+                        <button class="format-btn active" data-format="png" id="btnPng">
+                            <span class="format-icon">🖼️</span>
+                            <span class="format-name">PNG</span>
+                            <span class="format-desc">Lossless · Best Quality</span>
+                        </button>
+                        <button class="format-btn" data-format="jpg" id="btnJpg">
+                            <span class="format-icon">📸</span>
+                            <span class="format-name">JPG</span>
+                            <span class="format-desc">Smaller Size · Great Quality</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- FPS Selection -->
+                <div class="setting-group">
+                    <label class="setting-label">Frames Per Second</label>
+                    <div class="fps-control">
+                        <input type="range" id="fpsSlider" min="1" max="60" value="5" class="fps-slider">
+                        <div class="fps-display">
+                            <span class="fps-value" id="fpsValue">5</span>
+                            <span class="fps-unit">FPS</span>
+                        </div>
+                    </div>
+                    <div class="fps-presets">
+                        <button class="preset-btn" data-fps="1">1 FPS</button>
+                        <button class="preset-btn active" data-fps="5">5 FPS</button>
+                        <button class="preset-btn" data-fps="10">10 FPS</button>
+                        <button class="preset-btn" data-fps="24">24 FPS</button>
+                        <button class="preset-btn" data-fps="30">30 FPS</button>
+                        <button class="preset-btn" data-fps="60">60 FPS</button>
+                    </div>
+                    <p class="frame-estimate" id="frameEstimate">Estimated frames: ~0</p>
+                </div>
+
+                <!-- Quality (for JPG) -->
+                <div class="setting-group quality-group hidden" id="qualityGroup">
+                    <label class="setting-label">JPEG Quality</label>
+                    <div class="fps-control">
+                        <input type="range" id="qualitySlider" min="50" max="100" value="100" class="fps-slider quality-slider">
+                        <div class="fps-display">
+                            <span class="fps-value" id="qualityValue">100</span>
+                            <span class="fps-unit">%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-convert" id="convertBtn">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                    <path d="M4 11H18M18 11L12 5M18 11L12 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Start Extraction
+            </button>
+        </section>
+
+        <!-- Step 3: Progress -->
+        <section class="card progress-section hidden" id="progressSection">
+            <div class="card-header">
+                <span class="step-badge pulse">3</span>
+                <h2>Extracting Frames</h2>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar-wrapper">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="progress-stats">
+                    <span id="progressPercent">0%</span>
+                    <span id="progressCount">0 / 0 frames</span>
+                </div>
+                <p class="progress-status" id="progressStatus">Initializing...</p>
+            </div>
+            <div class="frame-preview-grid" id="framePreviewGrid"></div>
+            <button class="btn btn-ghost" id="cancelBtn">Cancel</button>
+        </section>
+
+        <!-- Step 4: Results -->
+        <section class="card results-section hidden" id="resultsSection">
+            <div class="card-header">
+                <span class="step-badge success">✓</span>
+                <h2>Extraction Complete!</h2>
+            </div>
+            <div class="results-stats" id="resultsStats"></div>
+            <div class="results-preview" id="resultsPreview"></div>
+            <div class="results-actions">
+                <button class="btn btn-primary btn-download" id="downloadBtn">
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                        <path d="M11 3V15M11 15L6 10M11 15L16 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 17V19H19V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Download ZIP
+                    <span class="download-size" id="downloadSize"></span>
+                </button>
+                <button class="btn btn-ghost" id="startOverBtn">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <path d="M3 9C3 5.68629 5.68629 3 9 3C12.3137 3 15 5.68629 15 9C15 12.3137 12.3137 15 9 15C7.20979 15 5.60523 14.2252 4.5 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M4.5 9V13H0.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Extract Again
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>FrameForge — All processing happens locally in your browser. No uploads to any server.</p>
+    </footer>
+
+    <!-- Scripts: JSZip + FileSaver (local), then our app -->
+    <script src="jszip.min.js"></script>
+    <script src="FileSaver.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
